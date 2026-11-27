@@ -1,11 +1,13 @@
 # Report
 
-## The quick breakdown
+## The high-level breakdown
 
-1. I chose the Hugging Face Open ASR Leaderboard, the headlining number besides private data, on the top five open-weight models. No subset was chosen, except for private due to not having access to the reference data. No real difference in published WER.
-2. Split the leaderboard normalization into each step and added four more.
-3. Added semantic error, which informs targets for agentic work.
-4. Gathered given metadata and acoustic breakdowns, tested and made a report of reliability.
+1. I chose the Hugging Face Open ASR Leaderboard, the headlining number besides private data, on the top five open-weight models. No subset was chosen, except for private due to not having access to the reference data. There was no real difference in the published WER except for Nemotron, which seems to have a mismatch between uploaded transcriptions and reported figures.
+2. I split the leaderboard normalization into each step and added four more. The largest contributor by far is punctuation and capitalization. Please refer to the Normalization section for more details.
+3. I added semantic error, which embeds the reference and hypotheses with a sentence embedder and compares the two vectors via cosine similarity. This informs targets for agentic work.
+4. I gathered the given (by the benchmark) metadata and added acoustic metadata. I tested and made a report of reliability of the tests, with most being reliable except for estimated SNR degrading with more audio degradations. Please refer to the Metadata section for more information.
+
+Please refer to the sections `Limitations`, `Automation`, and `AI usage` for their breakdowns.
 
 ## Reproducing the Hugging Face ASR benchmarks
 
@@ -123,7 +125,7 @@ These ideas go beyond just using AI to build this out and are more about the wor
 - Feed data to AI from analysis of the metadata-labeled and scored data. This has extreme potential and even in this project I saw good use from using AI. You could make a change (say test a new normalization), run the scoring and ask AI to look at trends that changed. There are issues with size and context for the LLM, so some condensing and refinement need to happen if you have datasets larger than these benchmarks. When used for this project, one finding was that errors cluster around particular speakers/episodes/calls. This finding doesn't show what is going on with those calls, but leads the researcher to a beginning place to research what sets those queries apart.
 - Add LLM metadata, like a classification for the type of utterance in the reference (along language-specific lines, like "question" or "request")
 
-## AI usage in project
+## AI usage
 
 AI was used throughout this project, not just for building the product, but for analysis of the data as well.
 
