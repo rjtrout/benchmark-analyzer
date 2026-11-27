@@ -3,9 +3,9 @@
 ## The high-level breakdown
 
 1. I chose the Hugging Face Open ASR Leaderboard, the headlining number besides private data, on the top five open-weight models. No subset was chosen, except for private due to not having access to the reference data. There was no real difference in the published WER except for Nemotron, which seems to have a mismatch between uploaded transcriptions and reported figures.
-2. I split the leaderboard normalization into each step and added four more. The largest contributor by far is punctuation and capitalization. Please refer to the Normalization section for more details.
-3. I added semantic error, which embeds the reference and hypotheses with a sentence embedder and compares the two vectors via cosine similarity. This informs targets for agentic work.
-4. I gathered the given (by the benchmark) metadata and added acoustic metadata. I tested and made a report of reliability of the tests, with most being reliable except for estimated SNR degrading with more audio degradations. Please refer to the Metadata section for more information.
+2. I split the leaderboard normalization into each step and added four more. The largest contributor by far is punctuation and capitalization. Please refer to the `Normalization` section for more details.
+3. I added semantic error, which embeds the reference and hypotheses with a sentence embedder and compares the two vectors via cosine similarity. This informs targets for agentic work. Please refer to the `Metrics` section for more info.
+4. I gathered the given (by the benchmark) metadata and added acoustic metadata. I tested and made a report of reliability of the tests, with most being reliable except for estimated SNR degrading with more audio degradations. Please refer to the `Metadata` section for more information.
 
 Please refer to the sections `Limitations`, `Automation`, and `AI usage` for their breakdowns.
 
