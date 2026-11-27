@@ -17,17 +17,25 @@ git clone --recurse-submodules git@github.com:rjtrout/benchmark-analyzer.git
 cd benchmark-analyzer
 uv sync
 uv run ba reproduce
+uv sync --extra demo
+uv run ba ui
+```
+
+A run of all the fetching and scoring has been saved to github under artifacts because the time to compute everything is extensive. To start fresh, this is the order after the clone above and sync. This will take considerable time for the downloand and the semantic
+
+```
+uv run ba clear all
+uv run ba fetch --audio      # starts artifacts/ over, and measures the metadata as it reads
+uv run ba reproduce
+uv run ba score --metric wer --metric cer
+uv run ba ablate
+uv run ba ablate --normalizer leaderboard_split
+uv run ba semantic --families
+uv run ba ui
 ```
 
 Python 3.11 or later and [`uv`](https://docs.astral.sh/uv/). The Open ASR Leaderboard code
 and the URGENT authors' WADA-SNR implementation are Git submodules under `third_party/`.
-
-`uv sync` installs what scoring needs. That includes the sentence encoder's library for
-semantic error, which brings PyTorch. The web UI is an extra, with Streamlit and Altair:
-
-```bash
-uv sync --extra demo
-```
 
 ## The comparison
 
