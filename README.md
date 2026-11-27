@@ -21,15 +21,19 @@ uv sync --extra demo
 uv run ba ui
 ```
 
-A run of all the fetching and scoring has been saved to github under artifacts because the time to compute everything is extensive. To start fresh, this is the order after the clone above and sync. This will take considerable time for the downloand and the semantic
+A run of all the fetching and scoring has been saved to Github under artifacts because the time to compute everything is extensive. A fresh download will take a while, but be saved on some hours of computation. To start fresh, this is the order after the clone above and sync. This will take considerable time for the download and the semantic embedding
 
+
+## Starting fresh
 ```
 uv run ba clear all
 uv run ba fetch --audio      # starts artifacts/ over, and measures the metadata as it reads
 uv run ba reproduce
 uv run ba score --metric wer --metric cer
 uv run ba ablate
+uv run ba ablate --metric cer
 uv run ba ablate --normalizer leaderboard_split
+uv run ba ablate --normalizer leaderboard_split --metric cer
 uv run ba semantic --families
 uv run ba ui
 ```
