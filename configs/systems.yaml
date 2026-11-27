@@ -1,0 +1,50 @@
+# The five open-weight models that stand highest on the Open ASR Leaderboard's English
+# short-form table, and what that table says about each.
+#
+# The table was read on 24 November 2026, at leaderboard version 1.16.2, from
+# https://huggingface.co/spaces/hf-audio/open_asr_leaderboard. A model is open-weight when
+# the table marks it so: its weights are on the Hugging Face Hub. Each of the five has its
+# transcripts in the leaderboard's public bucket, and those files are all this project reads.
+#
+# published  The table's WER on each public set. `ba reproduce` puts ours beside it. Seven
+#            are columns the page opens with. URGENT24 Clean is a column too, switched off
+#            by default: it is `urgent-clean` here.
+#
+# The comment above each model gives its rank among the table's 68 models, hosted services
+# included, and the table's Average WER, both in the view the page opens with: seven of
+# the public sets below and two private ones.
+#
+# To compare other models, change the entries. Any model with transcripts in the bucket
+# works, and published can be left out.
+
+systems:
+  # Rank 6, average WER 5.70.
+  - id: Musci-research/Musci-ASR-qwen-1019-hf
+    published:
+      { ami-cleaned: 6.53, earnings22-cleaned: 5.83, gigaspeech-cleaned: 6.41, spgispeech: 1.86,
+        urgent-noisy: 10.49, monsoon-en-in: 3.44, voxpopuli-cleaned: 1.47, urgent-clean: 4.80 }
+
+  # Rank 10, average WER 5.96.
+  - id: salesforce-sovereign-intelligence/SOV-Transcribe-1
+    published:
+      { ami-cleaned: 8.17, earnings22-cleaned: 5.40, gigaspeech-cleaned: 7.16, spgispeech: 2.40,
+        urgent-noisy: 10.54, monsoon-en-in: 2.95, voxpopuli-cleaned: 1.46, urgent-clean: 4.29 }
+
+  # Rank 12, average WER 5.97.
+  - id: oruk/orukqwen-asr-1.7b
+    published:
+      { ami-cleaned: 7.92, earnings22-cleaned: 5.88, gigaspeech-cleaned: 7.12, spgispeech: 2.74,
+        urgent-noisy: 9.44, monsoon-en-in: 3.51, voxpopuli-cleaned: 2.07, urgent-clean: 4.20 }
+
+  # Rank 13, average WER 6.06.
+  - id: FluidVoice-Labs/fluid-speech-pro
+    published:
+      { ami-cleaned: 7.55, earnings22-cleaned: 5.42, gigaspeech-cleaned: 7.51, spgispeech: 2.31,
+        urgent-noisy: 9.83, monsoon-en-in: 3.71, voxpopuli-cleaned: 1.70, urgent-clean: 4.56 }
+
+  # Rank 15, average WER 6.12.
+  # The 8-bit build. The full-precision build of the same model is next in the table, at 6.13.
+  - id: nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B-FP8
+    published:
+      { ami-cleaned: 8.05, earnings22-cleaned: 5.18, gigaspeech-cleaned: 7.21, spgispeech: 1.90,
+        urgent-noisy: 10.85, monsoon-en-in: 3.68, voxpopuli-cleaned: 1.77, urgent-clean: 4.29 }

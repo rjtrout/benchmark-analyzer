@@ -1,0 +1,31 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install (pinned by uv.lock)
+        run: uv sync --locked
+
+      - name: Lint
+        run: uv run ruff check src tests
+
+      - name: Tests (no network)
+        run: uv run pytest -m "not golden"
+
+      # The reproduction, on the transcripts in artifacts/: our score of each file against the
+      # leaderboard's own score file, and against its table. Nothing is downloaded.
+      - name: Reproduction on the stored transcripts
+        run: uv run pytest -m golden

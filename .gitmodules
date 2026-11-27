@@ -1,0 +1,6 @@
+[submodule "third_party/open_asr_leaderboard"]
+	path = third_party/open_asr_leaderboard
+	url = https://github.com/huggingface/open_asr_leaderboard.git
+[submodule "third_party/urgent2024_analysis"]
+	path = third_party/urgent2024_analysis
+	url = https://github.com/urgent-challenge/urgent2024_analysis.git

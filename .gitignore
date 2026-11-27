@@ -1,0 +1,20 @@
+# Downloads: the leaderboard's transcript files as fetched, and audio if it is asked for.
+# The leading slash keeps the rule to the folder at the root: src/ba/data/ is code.
+/data/
+
+# No key is used by this project. Should a local environment file ever exist, it stays out.
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+/dist/
+/build/
+
+# OS
+.DS_Store

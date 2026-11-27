@@ -1,0 +1,75 @@
+[project]
+name = "benchmark-analyzer"
+version = "0.1.0"
+description = "Compares the five highest open-weight models of the Open ASR Leaderboard from the transcripts it publishes: WER, CER and semantic error under several normalizers."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+dependencies = [
+    # App
+    "typer>=0.15",
+    "pydantic>=2.7",
+    "pyyaml>=6",
+    # Storage
+    "pyarrow>=16",
+    "numpy>=1.26",
+    # Scoring: what the leaderboard's own scorer imports.
+    # kaldialign is pinned to the version in the clone's requirements_jobs.txt.
+    "kaldialign==0.12.0",
+    "regex>=2024.4.16",
+    "num2words>=0.5.13",
+    "more-itertools>=11.2.1",
+    # Reading the public datasets and the leaderboard's public bucket.
+    "datasets>=3.0",
+    "huggingface_hub>=1.0",
+    # Reading audio files and measuring acoustic metadata.
+    "soundfile>=0.12",
+    "scipy>=1.11",
+    "silero-vad>=6.3",
+    "torch>=1.12",
+    "tqdm>=4.64",  # Imported by the URGENT WADA-SNR script.
+    # The sentence encoder behind semantic error. It brings PyTorch.
+    "sentence-transformers>=3",
+]
+
+[project.optional-dependencies]
+# The web UI and its charts.
+demo = ["streamlit>=1.67", "altair>=6.3.0"]
+
+[project.scripts]
+ba = "ba.cli.main:app"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+    "streamlit>=1.67.0",
+    "altair>=6.3.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ba"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Every test here is a function. No class is collected, so the store's TestCase, which is a
+# benchmark's test case, is not taken for a class of tests.
+python_classes = []
+addopts = "-q --strict-markers"
+markers = [
+    "golden: checks the stored transcripts against the leaderboard's published figures; needs artifacts/ (ba fetch)",
+]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+# Vendored code is kept as published, so it is not linted.
+extend-exclude = ["third_party", "src/ba/normalize/whisper_stock"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501", "B008"]

@@ -1,0 +1,61 @@
+# One entry per benchmark: the eight public sets the leaderboard runs in English.
+#
+# A benchmark is a list of test case IDs, read once from the dataset and saved under artifacts/.
+# Every model and every normalizer is scored on that one list. `ba fetch` saves the lists.
+#
+# loader   hf          a config of a dataset on the Hugging Face Hub
+#          hf-chunked  audio in chunks with one reference per session (Earnings22)
+#
+# All eight are public and need no account. The short ones come first.
+
+benchmarks:
+  # The leaderboard's URGENT24 Clean. The same speech as urgent-noisy, before the noise was added.
+  - id: urgent-clean
+    loader: hf
+    dataset_key: urgent2024_clean
+    source: { repo: hf-audio/open-asr-leaderboard, config: urgent2024_clean, split: test }
+
+  # The leaderboard's URGENT24. Each test case states the level its noise was mixed at.
+  - id: urgent-noisy
+    loader: hf
+    dataset_key: urgent2024
+    source: { repo: hf-audio/open-asr-leaderboard, config: urgent2024, split: test }
+
+  # Audio in chunks, one reference per call. Scored per call, as the leaderboard does.
+  - id: earnings22-cleaned
+    loader: hf-chunked
+    dataset_key: earnings22_cleaned_aa_chunked
+    source: { repo: ArtificialAnalysis/Earnings22-Cleaned-AA-chunked, split: test }
+    chunked:
+      metadata_file: earnings22_cleaned_aa_chunked_v1.jsonl
+      audio_dir: audio
+      parent_repo: ArtificialAnalysis/Earnings22-Cleaned-AA
+      parent_metadata_file: earnings22_cleaned_aa_v1.jsonl
+    # Transcripts written before August 2026 carry the name of a config this set no longer has.
+    manifest_aliases: [ArtificialAnalysis-Earnings22-Cleaned-AA-chunked_earnings22_cleaned_aa_chunked_test]
+
+  - id: voxpopuli-cleaned
+    loader: hf
+    dataset_key: voxpopuli_cleaned_aa
+    source: { repo: hf-audio/open-asr-leaderboard, config: voxpopuli_cleaned_aa, split: test }
+
+  # The leaderboard's Voice Arena Monsoon. Indian English, with a description of each speaker.
+  - id: monsoon-en-in
+    loader: hf
+    dataset_key: monsoon_en_in
+    source: { repo: VoiceArena/Monsoon_en_IN_test, split: test }
+
+  - id: ami-cleaned
+    loader: hf
+    dataset_key: ami_cleaned
+    source: { repo: hf-audio/open-asr-leaderboard, config: ami_cleaned, split: test }
+
+  - id: gigaspeech-cleaned
+    loader: hf
+    dataset_key: gigaspeech_cleaned
+    source: { repo: hf-audio/open-asr-leaderboard, config: gigaspeech_cleaned, split: test }
+
+  - id: spgispeech
+    loader: hf
+    dataset_key: spgispeech
+    source: { repo: hf-audio/open-asr-leaderboard, config: spgispeech, split: test }
