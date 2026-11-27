@@ -3,15 +3,30 @@
 from __future__ import annotations
 
 from pathlib import Path
+from uuid import uuid4
 
 import pyarrow as pa
 import pyarrow.parquet as pq
 
 
 def write(table: pa.Table, path: Path) -> None:
-    """These files are what a commit carries, so they are written as small as Parquet makes them."""
+    """Keep a table as a file: as small as Parquet makes it, and whole or not at all.
+
+    These files are what a commit carries, so they are written as small as Parquet makes
+    them. That takes a moment, and a page of the web UI or another command may read the
+    store meanwhile. So the table is written under a name of its own first, and takes the
+    file's name only once it is whole. A reader finds the file as it was, or no file yet,
+    and never half of one. Two runs may write the same file at once, so each writes under
+    a different name.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
-    pq.write_table(table, path, compression="zstd", compression_level=19)
+    unfinished = path.with_name(f"{path.name}.{uuid4().hex}.part")
+    try:
+        pq.write_table(table, unfinished, compression="zstd", compression_level=19)
+        unfinished.replace(path)
+    finally:
+        # Nothing stays under that name: it has the file's name by now, or the write was stopped.
+        unfinished.unlink(missing_ok=True)
 
 
 def write_texts(path: Path, texts: dict[str, str], schema: pa.Schema) -> None:

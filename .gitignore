@@ -2,6 +2,9 @@
 # The leading slash keeps the rule to the folder at the root: src/ba/data/ is code.
 /data/
 
+# A store file is written under a name of its own until it is whole. A run stopped hard can leave one behind.
+/artifacts/**/*.part
+
 # No key is used by this project. Should a local environment file ever exist, it stays out.
 .env
 .env.*

@@ -39,7 +39,7 @@ from ba.store.test_cases import TestCaseTable
 from ba.store.transcriptions import CLEAN, HypothesisTable, ReferenceTable
 
 # What ``ba clear`` can remove from the store and download cache.
-CLEARABLE = ("scores", "leaderboard-scores", "test-cases", "audio", "transcript-files")
+CLEARABLE = ("scores", "leaderboard-scores", "test-cases", "audio", "transcript-files", "all")
 
 
 class Store:
@@ -58,21 +58,21 @@ class Store:
         shutil.rmtree(self.root, ignore_errors=True)
 
     def clear(self, kind: str) -> None:
-        """Remove one category of stored artifacts or downloads."""
-        if kind == "scores":
+        """Remove one category of stored artifacts or downloads, or every one of them with ``all``."""
+        if kind not in CLEARABLE:
+            raise ValueError(f"Choose one of: {', '.join(CLEARABLE)}")
+        if kind == "scores" or kind == "all":
             shutil.rmtree(self.scores.folder, ignore_errors=True)
             # In a folder of texts, clean.parquet is the text as written. The rest is a normalizer's.
             for texts in (self.references, self.hypotheses):
                 for file in texts.folder.glob("*/*.parquet"):
                     if file.stem != CLEAN:
                         file.unlink()
-        elif kind == "leaderboard-scores":
+        if kind == "leaderboard-scores" or kind == "all":
             shutil.rmtree(self.published_scores.folder, ignore_errors=True)
-        elif kind == "test-cases":
+        if kind == "test-cases" or kind == "all":
             shutil.rmtree(self.test_cases.folder, ignore_errors=True)
-        elif kind == "audio":
+        if kind == "audio" or kind == "all":
             shutil.rmtree(self.paths.audio, ignore_errors=True)
-        elif kind == "transcript-files":
+        if kind == "transcript-files" or kind == "all":
             shutil.rmtree(self.paths.leaderboard, ignore_errors=True)
-        else:
-            raise ValueError(f"Choose one of: {', '.join(CLEARABLE)}")

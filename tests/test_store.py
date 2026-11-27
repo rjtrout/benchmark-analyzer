@@ -206,6 +206,44 @@ def test_the_leaderboards_own_score_is_kept_beside_ours(paths):
     assert (paths.artifacts / "scores" / "huggingface" / RUN.run_id / "leaderboard.parquet").exists()
 
 
+# ── writing ──────────────────────────────────────────────────────────────────────────────
+
+
+def test_a_file_being_written_is_read_as_it_was_until_it_is_whole(paths, monkeypatch):
+    store = Store(paths)
+    kept_meanwhile = []  # what a reader finds kept, at the moment the last byte of a file is written
+    write_table = pq.write_table
+
+    def write_and_look(table, where, **options):
+        write_table(table, where, **options)
+        kept_meanwhile.append((store.scores.has(RUN, "leaderboard", "wer"), store.scores.has(RUN, "leaderboard", "cer")))
+
+    monkeypatch.setattr(pq, "write_table", write_and_look)
+    store.scores.write(RUN, "leaderboard", "wer", [row("ami_cleaned/c1", 4, n_sub=1)])
+    store.scores.write(RUN, "leaderboard", "cer", [row("ami_cleaned/c1", 20, n_sub=2)])
+    # A page of the web UI, or another command, may read the store while a file is written. It finds no file
+    # until the first is whole, and then the first, with no character errors, until the second is whole.
+    assert kept_meanwhile == [(False, False), (True, False)]
+    assert store.scores.has(RUN, "leaderboard", "wer") and store.scores.has(RUN, "leaderboard", "cer")
+
+
+def test_a_write_that_is_stopped_leaves_the_file_as_it_was_and_nothing_beside_it(paths, monkeypatch):
+    store = Store(paths)
+    store.hypotheses.write(RUN, {"ami_cleaned/c1": "hello"})
+    write_table = pq.write_table
+
+    def write_and_stop(table, where, **options):
+        write_table(table, where, **options)
+        raise KeyboardInterrupt  # Ctrl-C, as the last byte is written
+
+    monkeypatch.setattr(pq, "write_table", write_and_stop)
+    with pytest.raises(KeyboardInterrupt):
+        store.hypotheses.write(RUN, {"ami_cleaned/c1": "hello there"})
+    assert store.hypotheses.read(RUN) == {"ami_cleaned/c1": "hello"}
+    folder = paths.artifacts / "transcriptions" / "hypotheses" / RUN.run_id
+    assert [file.name for file in folder.iterdir()] == ["clean.parquet"]
+
+
 # ── removing ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -254,3 +292,19 @@ def test_what_was_worked_out_here_can_be_cleared_and_what_was_fetched_stays(path
     assert store.test_cases.has("ami-cleaned")
 
 
+def test_clearing_all_removes_every_category(paths):
+    store = Store(paths)
+    store.test_cases.write("ami-cleaned", [make_test_case(1)])
+    store.references.write("ami-cleaned", {"ami_cleaned/c1": "reference number 1"})
+    store.hypotheses.write(RUN, {"ami_cleaned/c1": "hello"})
+    store.hypotheses.write(RUN, {"ami_cleaned/c1": "hello"}, "leaderboard")
+    store.published_scores.write(RUN, {"wer": 1.0, "wer_sub": 0, "wer_del": 0, "wer_ins": 0})
+    store.scores.write(RUN, "leaderboard", "wer", [row("ami_cleaned/c1", 1)])
+    paths.audio.mkdir(parents=True)
+    paths.leaderboard.mkdir(parents=True)
+    store.clear("all")
+    assert not store.scores.has(RUN, "leaderboard", "wer") and not store.hypotheses.has(RUN, "leaderboard")
+    assert not store.published_scores.has(RUN) and not store.test_cases.has("ami-cleaned")
+    assert not paths.audio.exists() and not paths.leaderboard.exists()
+    # The texts as written are no category of their own: only a fetch replaces them.
+    assert store.hypotheses.read(RUN) == {"ami_cleaned/c1": "hello"}
